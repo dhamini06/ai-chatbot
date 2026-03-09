@@ -15,10 +15,14 @@ except:
     st.error("❌ API key not found. Please add OPENROUTER_API_KEY in Streamlit Secrets.")
     st.stop()
 
-# OpenRouter client
+# OpenRouter client (with required headers)
 client = OpenAI(
     api_key=api_key,
-    base_url="https://openrouter.ai/api/v1"
+    base_url="https://openrouter.ai/api/v1",
+    default_headers={
+        "HTTP-Referer": "https://ai-chatbot-dhamini.streamlit.app",
+        "X-Title": "AI Chat Assistant"
+    }
 )
 
 # Sidebar
@@ -63,7 +67,6 @@ for msg in st.session_state.messages:
 prompt = st.chat_input("Ask something...")
 
 if prompt:
-    # Save user message
     st.session_state.messages.append(
         {"role": "user", "content": prompt}
     )
@@ -72,7 +75,6 @@ if prompt:
         st.markdown(prompt)
 
     with st.chat_message("assistant"):
-
         message_placeholder = st.empty()
 
         try:
@@ -89,7 +91,6 @@ if prompt:
 
         message_placeholder.markdown(answer)
 
-    # Save assistant response
     st.session_state.messages.append(
         {"role": "assistant", "content": answer}
     )
