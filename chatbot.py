@@ -8,29 +8,29 @@ st.set_page_config(
     layout="wide"
 )
 
-# Get API key from Streamlit secrets
+# Read API key from Streamlit secrets
 try:
     api_key = st.secrets["OPENROUTER_API_KEY"]
 except:
-    st.error("API key not found. Please add OPENROUTER_API_KEY in Streamlit Secrets.")
+    st.error("❌ API key not found. Please add OPENROUTER_API_KEY in Streamlit Secrets.")
     st.stop()
 
-# Initialize OpenRouter client
+# OpenRouter client
 client = OpenAI(
     api_key=api_key,
     base_url="https://openrouter.ai/api/v1"
 )
 
-# Sidebar settings
+# Sidebar
 with st.sidebar:
     st.title("⚙️ Settings")
 
     model = st.selectbox(
         "Choose Model",
         [
+            "openrouter/auto",
             "openai/gpt-3.5-turbo",
-            "mistralai/mistral-7b-instruct",
-            "meta-llama/llama-3-8b-instruct"
+            "mistralai/mistral-7b-instruct"
         ]
     )
 
@@ -47,10 +47,10 @@ with st.sidebar:
     st.markdown("---")
     st.markdown("Built by **Dhamini** 🚀")
 
-# App title
+# Title
 st.title("🤖 AI Chat Assistant")
 
-# Initialize chat memory
+# Chat memory
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
@@ -59,10 +59,11 @@ for msg in st.session_state.messages:
     with st.chat_message(msg["role"]):
         st.markdown(msg["content"])
 
-# User input
+# Input box
 prompt = st.chat_input("Ask something...")
 
 if prompt:
+    # Save user message
     st.session_state.messages.append(
         {"role": "user", "content": prompt}
     )
@@ -84,10 +85,11 @@ if prompt:
             answer = response.choices[0].message.content
 
         except Exception as e:
-            answer = "⚠️ Error connecting to AI service."
+            answer = f"⚠️ API Error: {str(e)}"
 
         message_placeholder.markdown(answer)
 
+    # Save assistant response
     st.session_state.messages.append(
         {"role": "assistant", "content": answer}
     )
